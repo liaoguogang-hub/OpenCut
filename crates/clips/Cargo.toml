@@ -1,0 +1,11 @@
+[package]
+name = "clips"
+description = "Editor-core clip primitive: the closed set of placed content types"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ids = { workspace = true }
+time = { workspace = true }
+serde = { workspace = true }

@@ -64,12 +64,12 @@ jobs:
 
       # `render` (wgpu) and `apps/desktop` (GPUI) require GPU / system
       # libraries that are unavailable in headless CI, so the gate is scoped to
-      # the pure-logic foundation crates `time` and `decode`.
+      # the pure-logic crates: `time`, `decode`, `ids`, and `clips`.
       - name: Check formatting
-        run: cargo fmt -p time -p decode -- --check
+        run: cargo fmt -p time -p decode -p ids -p clips -- --check
 
       - name: Clippy
-        run: cargo clippy -p time -p decode --all-targets -- -D warnings
+        run: cargo clippy -p time -p decode -p ids -p clips --all-targets -- -D warnings
 
       - name: Test
-        run: cargo test -p time -p decode
+        run: cargo test -p time -p decode -p ids -p clips
