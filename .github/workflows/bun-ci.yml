@@ -1,7 +1,7 @@
-name: Bun CI
+name: CI
 
 concurrency:
-  group: bun-ci-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 on:
@@ -15,7 +15,8 @@ on:
       - "*.md"
 
 jobs:
-  ci:
+  web:
+    name: Web (Bun + Moon)
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -33,5 +34,42 @@ jobs:
           auto-install: true
           auto-setup: true
 
-      - name: Run CI
+      - name: Run web CI
         run: moon ci
+
+  rust:
+    name: Rust (fmt, clippy, test)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      # `render` (wgpu) and `apps/desktop` (GPUI) require GPU / system
+      # libraries that are unavailable in headless CI, so the gate is scoped to
+      # the pure-logic foundation crates `time` and `decode`.
+      - name: Check formatting
+        run: cargo fmt -p time -p decode -- --check
+
+      - name: Clippy
+        run: cargo clippy -p time -p decode --all-targets -- -D warnings
+
+      - name: Test
+        run: cargo test -p time -p decode

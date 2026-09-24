@@ -4,7 +4,7 @@ applyTo: "**/*.{ts,tsx,js,jsx}"
 
 # Project Context
 
-Ultracite enforces strict type safety, accessibility standards, and consistent code quality for JavaScript/TypeScript projects using Biome's lightning-fast formatter and linter.
+Ultracite enforces strict type safety, accessibility standards, and consistent code quality for JavaScript/TypeScript projects using Oxlint's lightning-fast linter and Oxfmt's formatter (the Oxc ecosystem). This project is configured with the **Oxlint + Oxfmt** toolchain.
 
 ## Key Principles
 
@@ -319,9 +319,10 @@ Ultracite enforces strict type safety, accessibility standards, and consistent c
 
 ## Common Tasks
 
-- `npx ultracite init` - Initialize Ultracite in your project
-- `npx ultracite format` - Format and fix code automatically
-- `npx ultracite lint` - Check for issues without fixing
+- `bun run check` - Run the linter and format check without modifying files (`ultracite check`)
+- `bun run fix` - Format and fix code automatically (`ultracite fix`)
+- `npx ultracite init` - (Re)initialize Ultracite in your project
+- `npx ultracite doctor` - Verify your Ultracite setup
 
 ## Example: Error Handling
 

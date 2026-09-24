@@ -1,0 +1,20 @@
+# Normalize line endings to LF on checkout/commit so the repo is consistent
+# across Windows/macOS/Linux and auto-generated files (e.g. routeTree.gen.ts)
+# don't show phantom modifications.
+* text=auto eol=lf
+
+# Keep these as-is (no line-ending normalization needed).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.mp4 binary
+*.mov binary
+*.webm binary

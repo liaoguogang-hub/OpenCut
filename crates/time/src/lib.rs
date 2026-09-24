@@ -55,6 +55,10 @@ impl RationalTime {
         self.n == 0
     }
 
+    // Intentionally named `add`/`sub`/`mul` and returning `Result`: rational
+    // arithmetic can overflow, so these are fallible and cannot implement the
+    // std `Add`/`Sub`/`Mul` traits (which return `Self`).
+    #[allow(clippy::should_implement_trait)]
     pub fn add(self, other: Self) -> Result<Self, TimeError> {
         let lcm = lcm_u64(self.d, other.d).ok_or(TimeError::Overflow)?;
         let left = (self.n as i128)
@@ -67,6 +71,7 @@ impl RationalTime {
         Self::from_i128(sum, lcm as u128)
     }
 
+    #[allow(clippy::should_implement_trait)]
     pub fn sub(self, other: Self) -> Result<Self, TimeError> {
         let lcm = lcm_u64(self.d, other.d).ok_or(TimeError::Overflow)?;
         let left = (self.n as i128)
@@ -79,6 +84,7 @@ impl RationalTime {
         Self::from_i128(diff, lcm as u128)
     }
 
+    #[allow(clippy::should_implement_trait)]
     pub fn mul(self, scalar: i64) -> Result<Self, TimeError> {
         if scalar == 0 || self.n == 0 {
             return Ok(Self { n: 0, d: 1 });
@@ -89,6 +95,9 @@ impl RationalTime {
         Self::from_i128(n, self.d as u128)
     }
 
+    // Returns `Ordering` like `Ord::cmp`, but `RationalTime` keeps an explicit
+    // fallible comparison surface; this is a deliberate non-trait method.
+    #[allow(clippy::should_implement_trait)]
     pub fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         (self.n as i128 * other.d as i128).cmp(&(other.n as i128 * self.d as i128))
     }
@@ -215,7 +224,11 @@ pub mod floats {
         Round,
     }
 
-    fn from_seconds(seconds: f64, max_denominator: u64, snap: SecondsSnap) -> Result<RationalTime, TimeError> {
+    fn from_seconds(
+        seconds: f64,
+        max_denominator: u64,
+        snap: SecondsSnap,
+    ) -> Result<RationalTime, TimeError> {
         if !seconds.is_finite() {
             return Err(TimeError::Overflow);
         }
@@ -243,7 +256,12 @@ enum FrameSnap {
     Ceil,
 }
 
-fn frame_index_at(time: RationalTime, rate_n: u64, rate_d: u64, snap: FrameSnap) -> Result<i64, TimeError> {
+fn frame_index_at(
+    time: RationalTime,
+    rate_n: u64,
+    rate_d: u64,
+    snap: FrameSnap,
+) -> Result<i64, TimeError> {
     if time.n == 0 {
         return Ok(0);
     }
@@ -343,6 +361,10 @@ mod tests {
         let fps = FrameRate::new(30, 1).unwrap();
         let t = RationalTime::new(1, 30).unwrap();
         assert_eq!(fps.frame_index_floor(t).unwrap(), 1);
-        assert_eq!(fps.frame_index_floor(RationalTime::new(0, 1).unwrap()).unwrap(), 0);
+        assert_eq!(
+            fps.frame_index_floor(RationalTime::new(0, 1).unwrap())
+                .unwrap(),
+            0
+        );
     }
 }
